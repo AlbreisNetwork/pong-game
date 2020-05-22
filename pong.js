@@ -1,14 +1,18 @@
 let ctx, p1_y, p2_y, p1_points, p2_points
 let ball_y_orientation, ball_x_orientation, ball_x, ball_y
 let p1_key, p2_key
-const h=500, w=800, p_w=20, p_h=200, p1_x = 10, p2_x = w - p_w - 10
-
+let pause, hold, speed = 5
+const h=window.innerHeight, w=window.innerWidth, p_w=10, p1_x = 10, p2_x = w - p_w - 10
+let p1_h=window.innerHeight/10, p2_h=window.innerHeight/10
 function setup(){
     const canvas = document.getElementById("canvas")
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
     ctx = canvas.getContext("2d")
     
     // inicializa as posições y do p1 e do p2 para metade da tela
-    p1_y = p2_y = (h / 2) - (p_h/2)
+    p1_y = (h / 2) - (p1_h/2)
+    p2_y = (h / 2) - (p2_h/2)
     
     // inicializa os pontos dos jogadores como 0
     p1_points = 0
@@ -21,12 +25,14 @@ function setup(){
 }
 
 function loop(){
+
+    if(pause) return
     //Verifica se a bola está colidindo com o barra do player 1
-    if(ball_x >= p1_x && ball_x <= p1_x + 10 && ball_y >= p1_y && ball_y <= p1_y + p_h){
+    if(ball_x >= p1_x && ball_x <= p1_x + 10 && ball_y >= p1_y && ball_y <= p1_y + p1_h){
         ball_x_orientation = 1
     }
     //Verifica se a bola está colidindo com o barra do player 2
-    else if(ball_x >= p2_x && ball_x <= p2_x + 10 && ball_y >= p2_y && ball_y <= p2_y + p_h){
+    else if(ball_x >= p2_x - 10 && ball_x <= p2_x && ball_y >= p2_y && ball_y <= p2_y + p2_h){
         ball_x_orientation = -1
     }
 
@@ -34,28 +40,30 @@ function loop(){
     if(ball_y + 10 >= h || ball_y <= 0) ball_y_orientation *= -1
 
     //move a bola no eixo X e Y
-    ball_x += 5 * ball_x_orientation
-    ball_y += 5 * ball_y_orientation
+    ball_x += ((ball_x_orientation == 1 ? p2_points : p1_points)+3) * ball_x_orientation
+    ball_y += ((ball_x_orientation == 1 ? p2_points : p1_points)+3) * ball_y_orientation
 
     if(ball_x+10 > w) {
         p1_points++
+        if(p1_h < h) p1_h += window.innerHeight/20
         initBall()
     }
     else if(ball_x < 0){
         p2_points ++
+        if(p2_h < h) p2_h += window.innerHeight/20
         initBall()
     }
 
     if(p1_key == 87 && p1_y > 0){
-        p1_y -= 10
-    }else if(p1_key == 83 && p1_y + p_h < h){
-        p1_y += 10
+        if(p1_moving) p1_y -= 10
+    }else if(p1_key == 83 && p1_y + p1_h < h){
+        if(p1_moving) p1_y += 10
     }
 
     if(p2_key == 38 && p2_y > 0){
-        p2_y -= 10
-    }else if(p2_key == 40 && p2_y + p_h < h){
-        p2_y += 10
+        if(p2_moving) p2_y -= 10
+    }else if(p2_key == 40 && p2_y + p2_h < h){
+        if(p2_moving) p2_y += 10
     }
     draw()
 }
@@ -72,9 +80,9 @@ function draw(){
     // fundo
     drawRect(0,0,w,h,"#000")
     // player 1
-    drawRect(p1_x, p1_y, p_w, p_h)
+    drawRect(p1_x, p1_y, p_w, p1_h)
     // player 2
-    drawRect(p2_x, p2_y, p_w, p_h)
+    drawRect(p2_x, p2_y, p_w, p2_h)
     // barra lateral
     drawRect(w/2 -5,0,5,h)
     // bola
@@ -101,10 +109,28 @@ document.addEventListener("keydown",function(ev){
     // keyCode 87 = w, keycode 83 = s
     if(ev.keyCode == 87 || ev.keyCode == 83){
         p1_key = ev.keyCode
+        p1_moving = true
+    }
+    // keycode 38 = arrowUp, keycode 40 = arrowDown
+    else if(ev.keyCode== 38 || ev.keyCode==40) {
+        p2_key = ev.keyCode
+        p2_moving = true
+    }
+    else if(ev.keyCode== 27)
+        pause = !pause
+
+    console.log(ev.keyCode)
+})
+document.addEventListener("keyup",function(ev){
+    // keyCode 87 = w, keycode 83 = s
+    if(ev.keyCode == 87 || ev.keyCode == 83){
+        p1_moving = false
     }
     // keycode 38 = arrowUp, keycode 40 = arrowDown
     else if(ev.keyCode== 38 || ev.keyCode==40)
-        p2_key = ev.keyCode
+        p2_moving = false
+
+    console.log(ev.keyCode)
 })
 
 setup()
