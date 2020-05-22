@@ -1,7 +1,5 @@
 ﻿# Pong-game
 
-Jogo Pong feito em javascript para orientar programadores iniciantes e mostrar o uso de algumas funções como canvas, eventListener e Math.Random.
-
-Link para o post no Medium: [Criando o game Pong com JS em menos de 5 minutos](https://medium.com/@willyan.dantunes/criando-o-game-pong-com-js-em-menos-de-5-minutos-554d8a97a68d)
+Jogo Pong feito em Javascript com uma dinâmica baseada na pontução onde sua barra aumenta a caa ponto feito fazendo com que tenha mais vantagens. Porém ao aumentar a barra a velocidade da bola em sua direção também aumenta.
 
 ![gameScreen](./gamescreen.png)
